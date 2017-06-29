@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:KeyboardSensitivePage
+    x:Class="XY.Views.VideoPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behavior="clr-namespace:XY.Behaviors;assembly=XY"
+    xmlns:controls="clr-namespace:XY.Views.Controls;assembly=XY"
+    xmlns:converter="clr-namespace:XY.Converters;assembly=XY"
+    xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+    xmlns:fwv="clr-namespace:Xam.Plugin.Abstractions;assembly=WebView.Plugin.Abstractions"
+    xmlns:local="clr-namespace:XY.Controls;assembly=XY"
+    xmlns:messagePageParts="clr-namespace:XY.Views.PageParts.MessagePage;assembly=XY"
+    xmlns:pageParts="clr-namespace:XY.Views.PageParts.VideoPage;assembly=XY"
+    xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+    prism:ViewModelLocator.AutowireViewModel="True"
+    ControlTemplate="{StaticResource SubMenuTemplate}">
+
+    <local:KeyboardSensitivePage.Padding>
+        <OnPlatform x:TypeArguments="Thickness">
+            <OnPlatform.iOS>
+                0, 20, 0, 0
+            </OnPlatform.iOS>
+            <OnPlatform.Android>
+                0, 0, 0, 0
+            </OnPlatform.Android>
+        </OnPlatform>
+    </local:KeyboardSensitivePage.Padding>
+
+    <local:KeyboardSensitivePage.Content>
+        <AbsoluteLayout>
+            <local:InfiniteListView
+                x:Name="commentsListView"
+                Margin="0"
+                AbsoluteLayout.LayoutBounds="0,0,1,1"
+                AbsoluteLayout.LayoutFlags="SizeProportional"
+                HasUnevenRows="true"
+                IsPullToRefreshEnabled="true"
+                IsRefreshing="{Binding IsBusy}"
+                ItemsSource="{Binding Comments}"
+                LoadMoreCommand="{Binding AutoLoadCommand}"
+                RefreshCommand="{Binding RefreshFlowListCommand}"
+                RowHeight="-1"
+                SeparatorColor="Silver"
+                SeparatorVisibility="Default">
+                <local:InfiniteListView>
+                    <x:Arguments>
+                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                    </x:Arguments>
+                </local:InfiniteListView>
+                <local:InfiniteListView.Header>
+                    <AbsoluteLayout>
+                        <controls:CustomFormsWebView
+                            x:Name="formsWebView"
+                            AbsoluteLayout.LayoutBounds="0,0,1,230"
+                            AbsoluteLayout.LayoutFlags="WidthProportional"
+                            ContentType="Internet"
+                            Source="{Binding HtmlUrl}" />
+                        <pageParts:Header
+                            x:Name="Header"
+                            AbsoluteLayout.LayoutBounds="0,230,1,-1"
+                            AbsoluteLayout.LayoutFlags="WidthProportional"
+                            IsVisible="{Binding IsNotFullScreen}" />
+                    </AbsoluteLayout>
+                </local:InfiniteListView.Header>
+                <local:InfiniteListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid
+                                x:Name="commentsList"
+                                Margin="5,0,5,0"
+                                Padding="0,10"
+                                BackgroundColor="Transparent"
+                                ColumnSpacing="10"
+                                HorizontalOptions="FillAndExpand"
+                                VerticalOptions="FillAndExpand">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="1" />
+                                </Grid.RowDefinitions>
+                                <ffimageloading:CachedImage
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="0"
+                                    Margin="5"
+                                    Source="{Binding UserGroupImage}"
+                                    VerticalOptions="Start" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Margin="0,0,5,0"
+                                    FontSize="15"
+                                    HorizontalOptions="Center"
+                                    Text="{Binding CurrentLoucengText}"
+                                    VerticalOptions="End" />
+                                <StackLayout
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Orientation="Horizontal">
+                                    <Grid
+                                        Margin="0,5,0,0"
+                                        ColumnSpacing="0"
+                                        HeightRequest="20"
+                                        HorizontalOptions="Start"
+                                        IsVisible="{Binding HasBadge}"
+                                        RowSpacing="0"
+                                        VerticalOptions="CenterAndExpand">
+                                        <local:RoundedBoxView Margin="0" Style="{Binding CommentBadgesStyle}" />
+                                        <Label
+                                            Margin="3"
+                                            FontSize="11"
+                                            HorizontalOptions="Center"
+                                            HorizontalTextAlignment="Center"
+                                            Style="{Binding CommentsGroupStyle}"
+                                            TextColor="White"
+                                            VerticalOptions="Center"
+                                            VerticalTextAlignment="Center" />
+                                    </Grid>
+                                    <Label
+                                        Margin="0,5,0,0"
+                                        FontSize="16"
+                                        HorizontalOptions="Start"
+                                        Text="{Binding NickName}"
+                                        VerticalOptions="Center" />
+                                </StackLayout>
+                                <controls:HtmlLabel
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    FontSize="20"
+                                    HtmlText="{Binding FormattedContxt}"
+                                    VerticalTextAlignment="End" />
+                                <Grid
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Margin="0,0,0,0"
+                                    ColumnSpacing="0"
+                                    RowSpacing="0"
+                                    VerticalOptions="End">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label
+                                        Grid.Column="0"
+                                        Margin="0,0,5,0"
+                                        FontSize="15"
+                                        HorizontalOptions="Start"
+                                        Text="{Binding FormattedPostTime}"
+                                        VerticalOptions="End" />
+                                    <Grid
+                                        Grid.Column="2"
+                                        ColumnSpacing="0"
+                                        HorizontalOptions="End"
+                                        RowSpacing="0"
+                                        VerticalOptions="End">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label
+                                            Grid.Column="1"
+                                            Margin="0,0,5,0"
+                                            FontSize="15"
+                                            HorizontalOptions="End"
+                                            Text="{Binding FormattedHit}"
+                                            VerticalOptions="End" />
+                                        <ffimageloading:CachedImage
+                                            Grid.Column="2"
+                                            Margin="0,0,10,4"
+                                            HeightRequest="20"
+                                            HorizontalOptions="End"
+                                            Source="{Binding GoodImage}"
+                                            VerticalOptions="End">
+                                            <ffimageloading:CachedImage.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference commentsListView}, Path=BindingContext.LikeCommand}" CommandParameter="{Binding .ID}" />
+                                            </ffimageloading:CachedImage.GestureRecognizers>
+                                        </ffimageloading:CachedImage>
+                                        <ffimageloading:CachedImage
+                                            Grid.Column="3"
+                                            Margin="5,0,5,4"
+                                            HeightRequest="20"
+                                            HorizontalOptions="End"
+                                            IsEnabled="{Binding IsReplyEnabled}"
+                                            Source="{Binding ReplayGreyImage}"
+                                            Style="{StaticResource defaultFfimageloadingImageStyle}"
+                                            VerticalOptions="End">
+                                            <ffimageloading:CachedImage.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference commentsListView}, Path=BindingContext.ReplyToCommentCommand}"
+                                                    CommandParameter="{Binding .ID}"
+                                                    NumberOfTapsRequired="1" />
+                                            </ffimageloading:CachedImage.GestureRecognizers>
+                                        </ffimageloading:CachedImage>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </local:InfiniteListView.ItemTemplate>
+                <local:InfiniteListView.Footer IsVisible="{Binding IsNotFullScreen}">
+                    <Grid
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding IsRefreshing}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Label
+                            Grid.Column="0"
+                            FontSize="20"
+                            HorizontalOptions="CenterAndExpand"
+                            Text="{Binding ActivityText}"
+                            VerticalOptions="Center" />
+                        <ActivityIndicator
+                            Grid.Column="1"
+                            HorizontalOptions="FillAndExpand"
+                            IsRunning="True"
+                            VerticalOptions="Center"
+                            Color="Gray" />
+                    </Grid>
+                </local:InfiniteListView.Footer>
+            </local:InfiniteListView>
+
+            <ContentView
+                AbsoluteLayout.LayoutBounds="0,0,1,1"
+                AbsoluteLayout.LayoutFlags="SizeProportional"
+                BackgroundColor="Transparent"
+                IsVisible="{Binding CombinatingIsVisible}"
+                VerticalOptions="FillAndExpand">
+                <ContentView.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="TapGestureRecognizer_Tapped" />
+                </ContentView.GestureRecognizers>
+                <messagePageParts:CustomComments x:Name="customCommentsPagePart" HorizontalOptions="End" />
+            </ContentView>
+        </AbsoluteLayout>
+    </local:KeyboardSensitivePage.Content>
+</local:KeyboardSensitivePage>
